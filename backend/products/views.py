@@ -2,9 +2,16 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import Product, Wishlist
 import json
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.decorators import api_view, permission_classes
+from groq import Groq
+import environ
+import os
 
+env = environ.Env()
+environ.Env.read_env(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+client = Groq(api_key="")
+client = Groq(api_key=env("GROQ_API_KEY"))
 
 @api_view(['GET'])
 def flash_sale_list(request):
@@ -153,3 +160,59 @@ def get_user_wishlist(request):
         })
 
     return JsonResponse(wishlist_data, safe=False)
+
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def ai_shopping_assistant(request):
+    try:
+        body = json.loads(request.body)
+        user_message = body.get('message', '')
+        chat_history = body.get('history', []) 
+
+        all_products = Product.objects.all()
+        catalog_summary = []
+        for p in all_products:
+            catalog_summary.append(f"- ID: {p.id}, Title: {p.title}, Price: {p.price}, Category: {p.category}")
+        
+        products_context = "\n".join(catalog_summary)
+
+        system_prompt = f"""
+        You are "BeliBeli Bot", a friendly, expert personal shopper and fashion stylist for the BeliBeli e-commerce store.
+        Your goal is to help users find products, style outfits, and give recommendations.
+        
+        CRITICAL RULE: You can ONLY recommend products that exist in our official catalog below. Do NOT make up products.
+        
+        FORMAT RULE: When recommending a product, ALWAYS provide its title as a clickable Markdown link using this exact format:
+        [Product Title](/product/PRODUCT_ID) - Price
+        For example: "I recommend the [Men's Casual Shoes](/product/10) for Rs 850!"
+
+        Here is our current live store inventory catalog:
+        {products_context}
+        
+        Be concise, stylish, and direct in your recommendations.
+        """
+
+        messages = [{"role": "system", "content": system_prompt}]
+        
+        for msg in chat_history:
+            messages.append({"role": msg['role'], "content": msg['content']})
+            
+        messages.append({"role": "user", "content": user_message})
+
+        completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant", 
+            messages=messages,
+            temperature=0.7,
+            max_tokens=500
+        )
+
+        ai_response = completion.choices[0].message.content
+
+        return JsonResponse({"reply": ai_response}, status=200)
+
+    except Exception as e:
+        # return JsonResponse({"error": str(e)}, status=400)
+        print("!!! AI ASSISTANT ERROR LOG:", str(e))
+        return JsonResponse({"error": str(e)}, status=400)

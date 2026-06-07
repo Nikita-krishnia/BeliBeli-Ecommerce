@@ -13,10 +13,12 @@ import TrackOrder from './components/TrackOrder';
 import ScrollToTop from './components/ScrollToTop';
 import { useState } from 'react';
 import WishlistPage from './components/WishlistPage';
+import AIAssistant from './components/AIAssistant';
+
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-
+  const currentToken = localStorage.getItem('token') || 'guest';
   const location = useLocation();
   const hideHeaderFooter = location.pathname === '/login' || location.pathname === '/signup';
 
@@ -43,6 +45,7 @@ function App() {
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/track/:orderId" element={<TrackOrder />} />
       </Routes>
+      <AIAssistant key={currentToken} />
      {!hideHeaderFooter && <Footer />}
     </>
   );

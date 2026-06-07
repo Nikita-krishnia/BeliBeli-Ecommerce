@@ -9,4 +9,5 @@ urlpatterns = [
     path('api/products/<int:product_id>/', product_detail_api, name='product-detail-api'),
     path('api/products/wishlist/toggle/', views.toggle_wishlist, name='toggle_wishlist'),
     path('api/products/wishlist/', views.get_user_wishlist, name='get_user_wishlist'),
+    path('api/products/ai-assistant/', views.ai_shopping_assistant, name='ai_shopping_assistant'),
 ]
