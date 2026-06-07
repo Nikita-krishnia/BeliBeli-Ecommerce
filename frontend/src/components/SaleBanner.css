@@ -1,0 +1,63 @@
+.sale-banner{
+    width: 100%;
+    background: linear-gradient(white,rgb(231, 231, 231))
+
+}
+
+.banner-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* border-bottom: 1px solid grey; */
+
+
+}
+
+.banner-content{
+    padding: 0px 0px 0px 100px;
+    color: grey;
+}
+
+.banner-image-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    object-fit: cover; 
+    /*to fit image in container properly */
+}
+
+.banner-img{
+    /* width: 600px; */
+    max-width: 100%;
+    height: 470px;
+    /* max-height: 380px; */
+}
+
+.banner-tagline {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.banner-title {
+    margin-top: 10px;
+    color: #111111;
+    font-size: 70px;
+    font-weight: 900;
+    margin-bottom: 16px;
+    max-width: 670px;
+}
+
+.below-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 50px;
+}
+
+.swiper-slide-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    width: 100%;
+}

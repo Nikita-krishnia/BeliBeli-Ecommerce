@@ -1,0 +1,97 @@
+.flash-sale-section{
+    background-color: rgb(231, 231, 231);
+    padding:30px 0px 70px 30px;
+    /* font-family: sans-serif; */
+}
+
+.flash-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.flash-title-container{
+    padding: 10px 0px 0px 30px;
+    display: flex;
+    align-items: center;    
+    gap:5px;
+}
+
+.flash-title-container h2{
+    font-size: 40px;
+    margin: 0px;
+    
+    
+}
+
+.flash-icon-wrapper{
+    background-color: black;
+    width: 20px ;
+    height: 20px;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 50%;
+}
+
+
+ .timer-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 10px;
+    font-size: 18px;
+}
+
+.time-block{
+    color: white;
+    background-color: rgb(238, 50, 106);
+    padding:5px 5px;
+    border-radius: 50%;
+}
+
+
+.time-colon{
+    font-weight: 700;
+}
+
+
+.flash-nav-buttons {
+    display: flex;
+    gap: 8px;
+    margin-right: 60px;
+
+}
+
+.nav-btn{
+    border: 1px solid grey;
+    background:white;
+    color: black;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.next-btn{
+    background-color: black;
+    color: white;
+}
+
+
+.flash-products-container{
+    /* width: 100% ;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+     padding: 0px 40px; */
+     margin: 0px;
+    padding-left: 40px ;
+
+}
+.swiper-slide{
+
+    width: 100%;
+    
+}
+

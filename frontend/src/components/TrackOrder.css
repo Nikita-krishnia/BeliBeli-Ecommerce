@@ -1,0 +1,126 @@
+.track-order-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.back-to-orders-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #4b5563;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 24px;
+}
+
+.back-to-orders-link:hover { color: #111827; }
+
+/* SUMMARY BAR HEADER */
+.tracking-summary-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+    background-color: #f9fafb;
+    margin-bottom: 24px;
+}
+
+.tracking-summary-card h2 {
+    font-size: 20px;
+    margin: 0 0 4px 0;
+    color: #111827;
+}
+
+.tracking-summary-card p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.status-badge.processing { background-color: #dbeafe; color: #2563eb; }
+.status-badge.shipped { background-color: #fef9c3; color: #ca8a04; }
+.status-badge.delivered { background-color: #dcfce7; color: #16a34a; }
+
+/* TIMELINE BOX  */
+.timeline-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 30px;
+    background-color: #ffffff;
+}
+
+.vertical-timeline {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-left: 20px;
+}
+
+/* Connecting track line */
+.vertical-timeline::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 35px;
+    bottom: 40px;
+    width: 3px;
+    background-color: #e5e7eb;
+}
+
+.timeline-milestone {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 35px;
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-milestone:last-child { margin-bottom: 0; }
+
+.milestone-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #ffffff;
+}
+
+.milestone-content h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+}
+
+.milestone-content p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.timeline-milestone.completed .milestone-icon {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+.timeline-milestone.completed .milestone-content h3 { color: #2563eb; }
+
+.timeline-milestone.pending .milestone-icon {
+    background-color: #f3f4f6;
+    color: #d1d5db;
+}
+.timeline-milestone.pending .milestone-content h3 { color: #9ca3af; }

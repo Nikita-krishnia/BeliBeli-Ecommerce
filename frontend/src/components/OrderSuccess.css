@@ -1,0 +1,138 @@
+.order-success-page {
+    max-width: 750px;
+    margin: 60px auto;
+    padding: 0 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+    text-align: center;
+}
+
+.success-header-card {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 40px 20px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+}
+
+.success-icon {
+    margin-bottom: 16px;
+    animation: scaleIn 0.4s ease-out;
+}
+
+.success-header-card h1 {
+    font-size: 26px;
+    color: #166534;
+    margin: 0 0 10px 0;
+}
+
+.order-number-sub {
+    color: #166534;
+    font-size: 15px;
+    margin: 0;
+}
+
+/* TRACKING */
+.delivery-tracking-panel {
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 30px;
+    background-color: #ffffff;
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.delivery-tracking-panel h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    margin: 0 0 20px 0;
+    color: #111827;
+}
+
+.estimated-date {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #eff6ff;
+    color: #1e40af;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* TIMELINE GENERATOR */
+.tracking-timeline {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-top: 20px;
+}
+
+.tracking-timeline::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 40px;
+    right: 40px;
+    height: 3px;
+    background-color: #e5e7eb;
+    z-index: 1;
+}
+
+.timeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+}
+
+.timeline-step .circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 8px;
+    border: 3px solid #ffffff;
+}
+
+.timeline-step span {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+/* STEP CONTEXT STATES */
+.timeline-step.completed .circle {
+    background-color: #10b981;
+    color: #ffffff;
+}
+.timeline-step.completed span { color: #10b981; }
+
+.timeline-step.active .circle {
+    background-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 0 0 4px #dbeafe;
+}
+.timeline-step.active span { color: #2563eb; font-weight: 600; }
+
+.continue-shopping-btn {
+    display: inline-block;
+    background-color: #111827;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.continue-shopping-btn:hover { background-color: #1f2937; }

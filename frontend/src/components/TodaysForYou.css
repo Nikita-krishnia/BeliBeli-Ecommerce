@@ -1,0 +1,17 @@
+.Todays-section {
+    padding: 35px 74px 20px 74px;
+}
+
+.navbar-for-todays {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.products-grid1 {
+    margin: 0px;
+    padding: 30px 0px 30px 1px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 30px; 
+}
