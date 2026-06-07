@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link ,useNavigate} from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Share2, Star, ChevronRight } from 'lucide-react';
@@ -13,32 +13,79 @@ interface Product {
     soldCount: string;
     category: string;
     image: string;
+    isWishlisted?:boolean;
 }
 
 export default function ProductDetail() {
     const { id } = useParams<{ id: string }>();
     const { addToCart } = useCart();
+    const navigate = useNavigate();
 
     const [selectedSize, setSelectedSize] = useState('M');
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const [isLiked, setIsLiked] = useState(false);
+
+
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/api/products/${id}/`)
-            .then((res) => {
-                if (!res.ok) throw new Error('Product not found in database');
-                return res.json();
-            })
-            .then((data: Product) => {
-                setProduct(data);
+        const fetchProductDetail = async () => {
+            const token = localStorage.getItem('token');
+            const headers: HeadersInit = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Token ${token}`;
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/products/${id}/`, {
+                    method: 'GET',
+                    headers: headers
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setProduct(data);
+                    setIsLiked(data.isWishlisted || false); 
+                }
+            } catch (err) {
+                console.error("Error loading product detail:", err);
+            } finally {
                 setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error connecting to Django database:', error);
-                setProduct(null);
-                setLoading(false);
-            });
+            }
+        };
+
+        fetchProductDetail();
     }, [id]);
+
+    const handleWishlistToggle = async () => {
+        if (!product) return;
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert("Please login to add items to your wishlist!");
+            return;
+        }
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/products/wishlist/toggle/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`
+                },
+                body: JSON.stringify({ productId: product.id })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setIsLiked(data.isWishlisted); 
+            }
+        } catch (err) {
+            console.error("Wishlist toggle failure:", err);
+        }
+    };
+
+    const handleBuyNow = () => {
+        if (!product) return;
+        addToCart(product.id);
+        navigate('/cart');
+    };
 
     if (loading) {
         return <div className="product-loading">Loading item specifications...</div>;
@@ -116,13 +163,14 @@ export default function ProductDetail() {
                     </div>
 
                     <div className="buy-options">
-                        <button className="buy-now">Buy this Item</button>
+                        <button className="buy-now" onClick={handleBuyNow}>Buy this Item</button>
                         <button onClick={() => addToCart(product.id)} className="add-to-bag">Add to Bag</button>
                     </div>
 
                     <div className="chat-wishlist-share">
                         <button className="social"><MessageCircle size={16} /> Chat</button>
-                        <button className="social"><Heart size={16} /> Wishlist</button>
+                        <button className="social" onClick={handleWishlistToggle}><Heart size={16} color={isLiked ? "#ff4d4d" : "#333"} 
+                                fill={isLiked ? "#ff4d4d" : "none"} /> Wishlist</button>
                         <button className="social"><Share2 size={16} /> Share</button>
                     </div>
 

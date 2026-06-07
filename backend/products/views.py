@@ -70,7 +70,7 @@ def dynamic_category_list(request):
     return JsonResponse(categories_list, safe=False)
 
 
-@api_view(['GET']) # Added decorator for token tracking consistency
+@api_view(['GET']) 
 def product_detail_api(request, product_id):
     """Fetches a single unique product record based on its database primary key ID"""
     product = get_object_or_404(Product, id=product_id)
