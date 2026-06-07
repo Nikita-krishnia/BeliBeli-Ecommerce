@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import { useNavigate } from 'react-router-dom';
 
 interface bannerDetail{
     id:number;
@@ -10,6 +11,7 @@ interface bannerDetail{
     title:string;
     below_title:string;
     image:string;
+    linkTo: string;
 }
 const banner_slides: bannerDetail[] = [
     {
@@ -17,25 +19,28 @@ const banner_slides: bannerDetail[] = [
         hashtag_line: "#Big Fashion Sale",
         title: "Limited Time Offer! Up to 50% OFF!",
         below_title: "Redefine Your Everyday Style ",
-        image: './img/products/tshirt.png'
+        image: './img/products/tshirt.png',
+        linkTo: '/?filter=flash_sale'
     },
     {
         id: 2,
         hashtag_line: "#Deals on Fashion and Beauty",
         title: "Starting from 199! The Offer is Limited !",
         below_title: "Redefine Your Everyday Style ",
-        image: './img/products/banner.png'
+        image: './img/products/banner.png',
+        linkTo: '/?filter=todays_for_you'
     },
     {
         id: 3,
         hashtag_line: "#Big Fashion Sale",
         title: "Up To 70% OFF!",
         below_title: "Timeless Style Modern You!",
-        image: './img/products/banner32.png'
+        image: './img/products/banner32.png',
+        linkTo: '/?filter=flash_sale'
     }
 ]
 export default function SaleBanner() {
-
+const navigate = useNavigate();
 return (
     <section className="sale-banner">
         <div className="banner-container">
@@ -50,7 +55,9 @@ return (
             >
             {banner_slides.map((slide) => (
                         <SwiperSlide key={slide.id}>
-                            <div className="swiper-slide-content">
+                            <div className="swiper-slide-content" onClick={() => navigate(slide.linkTo)}
+                                style={{ cursor: 'pointer' }}>
+
                                 <div className="banner-content">
                                     <span className="banner-tagline">{slide.hashtag_line}</span>
                                     <h1 className="banner-title">{slide.title}</h1>
