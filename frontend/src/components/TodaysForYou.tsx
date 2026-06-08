@@ -23,16 +23,29 @@ export default function TodaysForYou({ selectedCategory, searchQuery }: TodaysFo
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/products/todays-for-you/')
-            .then((response) => response.json())
-            .then((data) => {
-                setProducts(data);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching Todays For You data:', error);
-                setLoading(false);
-            });
+        const fetchProducts = async () => {
+            const token = localStorage.getItem('token');
+            const headers: HeadersInit = { 'Content-Type': 'application/json' };
+            if (token) {
+                headers['Authorization'] = `Token ${token}`;
+            }
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/products/todays-for-you/', {
+                    method: 'GET',
+                    headers: headers
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setProducts(data);
+                }
+            }
+            catch (error){
+            console.error('Error fetching Todays For You data:', error);
+        }finally {
+            setLoading(false);
+        }
+    };
+    fetchProducts();
     }, []);
 
 

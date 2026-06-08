@@ -1,12 +1,13 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from .models import Product, Wishlist
+from .models import Product, Wishlist,UserCategoryPreference
 import json
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from groq import Groq
 import environ
 import os
+from django.utils import timezone
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
@@ -51,8 +52,28 @@ def todays_for_you_list(request):
     if request.user.is_authenticated:
         user_wishlist_ids = Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
 
+
+    favorite_categories = []
+    if request.user.is_authenticated:
+        favorite_categories = UserCategoryPreference.objects.filter(
+            user=request.user, 
+            view_count__gt=0
+        ).order_by('-view_count').values_list('category', flat=True)
+
+    all_products = list(products)
+    if favorite_categories:
+        # Sort the product list-items belonging to top categories float straight to the front
+        def get_sort_priority(product):
+            if product.category in favorite_categories:
+                # Find its index position in the preference list (lower index = higher priority)
+                return list(favorite_categories).index(product.category)
+            return len(favorite_categories) + 1 # Push non-preferred categories to the back
+            
+        all_products.sort(key=get_sort_priority)
+
+
     products_data = []
-    for product in products:
+    for product in all_products:
         image_path = product.image.url if product.image else ""
         if image_path and not image_path.startswith('http'):
             image_path = f"http://127.0.0.1:8000{image_path}"
@@ -65,6 +86,7 @@ def todays_for_you_list(request):
             "image": image_path,
             "rating": product.rating,
             "soldCount": product.sold_count,
+            "category": product.category,
             "isWishlisted": product.id in user_wishlist_ids 
         })
 
@@ -216,3 +238,27 @@ def ai_shopping_assistant(request):
         # return JsonResponse({"error": str(e)}, status=400)
         print("!!! AI ASSISTANT ERROR LOG:", str(e))
         return JsonResponse({"error": str(e)}, status=400)
+    
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def track_category_view(request):
+    try:
+        body = json.loads(request.body)
+        category = body.get('category', '').strip()
+        
+        if not category:
+            return JsonResponse({"error": "Category is required"}, status=400)
+            
+        pref, created = UserCategoryPreference.objects.get_or_create(
+            user=request.user,
+            category=category
+        )
+        pref.view_count += 1
+        pref.save()
+        
+        return JsonResponse({"message": "Preference tracked successfully"}, status=200)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+

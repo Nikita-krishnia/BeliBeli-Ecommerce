@@ -43,7 +43,19 @@ export default function ProductDetail() {
                     const data = await response.json();
                     setProduct(data);
                     setIsLiked(data.isWishlisted || false); 
+
+                    if (token && data.category) {
+                        fetch('http://127.0.0.1:8000/api/products/track-view/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Token ${token}`
+                            },
+                            body: JSON.stringify({ category: data.category })
+                        }).catch(err => console.error("Silent preference tracking failed:", err));
+                    }
                 }
+
             } catch (err) {
                 console.error("Error loading product detail:", err);
             } finally {

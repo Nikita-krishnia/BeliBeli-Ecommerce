@@ -31,3 +31,16 @@ class Wishlist(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.product.title}"
+    
+
+class UserCategoryPreference(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='category_preferences')
+    category = models.CharField(max_length=100)
+    view_count = models.PositiveIntegerField(default=0)
+    last_viewed = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'category')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.category} ({self.view_count} views)"
