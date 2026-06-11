@@ -9,3 +9,5 @@ backend/*.sqlite3
 backend/venv/
 backend/.env
 .DS_Store
+__pycache__/
+*.pyc
