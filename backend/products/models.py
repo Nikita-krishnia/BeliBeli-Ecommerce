@@ -77,3 +77,23 @@ def auto_generate_product_vector(sender, instance, created, **kwargs):
             print(f" Signal : Generated vector automatically for '{instance.title}'")
         except Exception as e:
             print(f" Automatic vector generation failed for {instance.title}: {str(e)}")
+
+
+
+class SearchConfiguration(models.Model):
+    confidence_threshold = models.FloatField(
+        default=0.68, 
+        help_text="Minimum cosine similarity score (0.0 to 1.0) required for a visual match. Default is 0.68."
+    )
+    is_active = models.BooleanField(
+        default=True, 
+        help_text="Enable this row configuration to control the live search matching threshold parameters."
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Search Configuration"
+        verbose_name_plural = "Search Configurations"
+
+    def __str__(self):
+        return f"Active Configuration Threshold: {self.confidence_threshold} (Updated: {self.updated_at.strftime('%Y-%m-%d %H:%M')})"

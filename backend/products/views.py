@@ -13,6 +13,7 @@ from PIL import Image
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from sentence_transformers import SentenceTransformer
+from .models import Product, SearchConfiguration
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
@@ -300,6 +301,10 @@ def visual_product_search(request):
         
         print(f"AI Predicted Search Domain Category: {predicted_domain}")
         
+        config = SearchConfiguration.objects.filter(is_active=True).first()
+        active_threshold = config.confidence_threshold if config else 0.68
+        print(f"⚙️ Dynamic Parameters Applied — Confidence Threshold: {active_threshold}")
+
         products = Product.objects.all()
         match_results = []
         
@@ -339,8 +344,7 @@ def visual_product_search(request):
                     (predicted_domain == "hats" and "hat" in product_cat_lower)
                 )
                 
-                # Fallback safeguard: If similarity is exceptionally high (>80%), let it through anyway
-                if similarity >= 0.68 and (is_domain_match or similarity >= 0.80):
+                if similarity >= active_threshold and (is_domain_match or similarity >= 0.80):
                     match_results.append((p, similarity))
                     
             except Exception as row_err:
@@ -374,81 +378,4 @@ def visual_product_search(request):
     except Exception as e:
         print("!!! VISUAL SEARCH CRASH LOG:", str(e))
         return JsonResponse({"error": f"Visual search failed processing: {str(e)}"}, status=500)
-    """
-    Accepts an uploaded image file, generates its CLIP fingerprint,
-    and returns top matching products using Cosine Similarity.
-    """
-    if 'image' not in request.FILES:
-        return JsonResponse({"error": "No image file provided"}, status=400)
-        
-    try:
-        uploaded_file = request.FILES['image']
-        user_img = Image.open(uploaded_file)
-        
-        
-        # model = SentenceTransformer('clip-ViT-B-32')
-        user_vector = GLOBAL_CLIP_MODEL.encode(user_img)
-        
-        # Pull all products
-        products = Product.objects.all()
-        match_results = []
-        
-        for p in products:
-            # ➔ CRITICAL FIX: Skip product if it has no vector text string at all
-            if not p.image_vector:
-                continue
-                
-            try:
-                # Attempt to parse vector string
-                parsed_vector = json.loads(p.image_vector)
-                if not parsed_vector:
-                    continue
-                    
-                catalog_vector = np.array(parsed_vector)
-                
-                # ➔ CRITICAL FIX: Validate that matrix vector shapes match exactly before doing dot product math
-                if user_vector.shape != catalog_vector.shape:
-                    continue
-                
-                # Calculate Cosine Similarity
-                dot_product = np.dot(user_vector, catalog_vector)
-                norm_user = np.linalg.norm(user_vector)
-                norm_catalog = np.linalg.norm(catalog_vector)
-                
-                if norm_user == 0 or norm_catalog == 0:
-                    continue
-                    
-                similarity = dot_product / (norm_user * norm_catalog)
-                if similarity >= 0.48: 
-                    match_results.append((p, similarity))
-            except Exception as row_err:
-                print(f"Skipping row error for {p.title}: {str(row_err)}")
-                continue 
-                
-        # Sort by match score descending
-        match_results.sort(key=lambda x: x[1], reverse=True)
-        top_matches = match_results[:5]
-        
-        search_data = []
-        for product, score in top_matches:
-            image_path = product.image.url if product.image else ""
-            if image_path and not image_path.startswith('http'):
-                image_path = f"http://127.0.0.1:8000{image_path}"
-                
-            search_data.append({
-                "id": product.id,
-                "title": product.title,
-                "price": product.price,
-                "oldPrice": product.old_price,
-                "image": image_path,
-                "rating": product.rating,
-                "soldCount": product.sold_count,
-                "category": product.category,
-                "matchScore": round(float(score) * 100, 2)
-            })
-            
-        return JsonResponse(search_data, safe=False, status=200)
-        
-    except Exception as e:
-        print("!!! VISUAL SEARCH CRASH LOG:", str(e)) # ➔ This will show up in your Django terminal window!
-        return JsonResponse({"error": f"Visual search failed processing: {str(e)}"}, status=500)
+    
