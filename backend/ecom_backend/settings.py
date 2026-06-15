@@ -26,15 +26,12 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-rxop3s%1(0%%rlm$cbr3@j6w(i@$!pw5-uqfn2cl^zw8ma%b!n'
-SECRET_KEY=env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-rxop3s%1(0%%rlm$cbr3@j6w(i@$!pw5-uqfn2cl^zw8ma%b!n')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-DEBUG=env('DEBUG')
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = []
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
 
 # Application definition
 
@@ -98,13 +95,16 @@ WSGI_APPLICATION = 'ecom_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
+DATABASES = {
+    'default': env.db('DATABASE_URL')
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
