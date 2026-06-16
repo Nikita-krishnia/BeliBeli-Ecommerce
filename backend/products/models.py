@@ -54,26 +54,33 @@ class UserCategoryPreference(models.Model):
         return f"{self.user.username} - {self.category} ({self.view_count} views)"
     
 
+# @receiver(post_save, sender=Product)
+# def auto_generate_product_vector(sender, instance, created, **kwargs):
+#     """Automatically generates an image vector fingerprint when a product is saved"""
+#     if instance.image and not instance.image_vector:
+#         try:
+#             from sentence_transformers import SentenceTransformer
+
+#             model = SentenceTransformer('clip-ViT-B-32')
+
+#             response = requests.get(instance.image.url)
+#             img = Image.open(BytesIO(response.content))
+#             vector = model.encode(img)
+
+#             instance.image_vector = json.dumps(vector.tolist())
+#             Product.objects.filter(id=instance.id).update(image_vector=instance.image_vector)
+#             print(f"Signal: Generated vector automatically for '{instance.title}'")
+#         except Exception as e:
+#             print(f"Automatic vector generation failed for {instance.title}: {str(e)}")
+
+
 @receiver(post_save, sender=Product)
 def auto_generate_product_vector(sender, instance, created, **kwargs):
-    """Automatically generates an image vector fingerprint when a product is saved"""
     if instance.image and not instance.image_vector:
-        try:
-            from sentence_transformers import SentenceTransformer
+        from .tasks import generate_image_vector
+        generate_image_vector.delay(instance.id)
 
-            model = SentenceTransformer('clip-ViT-B-32')
 
-            response = requests.get(instance.image.url)
-            img = Image.open(BytesIO(response.content))
-            vector = model.encode(img)
-
-            instance.image_vector = json.dumps(vector.tolist())
-            Product.objects.filter(id=instance.id).update(image_vector=instance.image_vector)
-            print(f"Signal: Generated vector automatically for '{instance.title}'")
-        except Exception as e:
-            print(f"Automatic vector generation failed for {instance.title}: {str(e)}")
-
-            
 class SearchConfiguration(models.Model):
     confidence_threshold = models.FloatField(
         default=0.68, 
