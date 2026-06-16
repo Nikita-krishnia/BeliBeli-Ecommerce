@@ -4,6 +4,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import json
 from PIL import Image
+import requests
+from io import BytesIO
 
 
 class Product(models.Model):
@@ -52,34 +54,26 @@ class UserCategoryPreference(models.Model):
         return f"{self.user.username} - {self.category} ({self.view_count} views)"
     
 
-
 @receiver(post_save, sender=Product)
 def auto_generate_product_vector(sender, instance, created, **kwargs):
     """Automatically generates an image vector fingerprint when a product is saved"""
-    # Only run if there is an image and it doesn't already have a vector calculated
     if instance.image and not instance.image_vector:
         try:
-            # We import inside the function to prevent slow startup times when launching the server
             from sentence_transformers import SentenceTransformer
-            
-            # Load the model
+
             model = SentenceTransformer('clip-ViT-B-32')
-            
-            # Process the image file path
-            img = Image.open(instance.image.path)
+
+            response = requests.get(instance.image.url)
+            img = Image.open(BytesIO(response.content))
             vector = model.encode(img)
-            
-            # Save it right back as a JSON string
+
             instance.image_vector = json.dumps(vector.tolist())
-            
-            # Using update() instead of save() avoids hitting an infinite recursive loop!
             Product.objects.filter(id=instance.id).update(image_vector=instance.image_vector)
-            print(f" Signal : Generated vector automatically for '{instance.title}'")
+            print(f"Signal: Generated vector automatically for '{instance.title}'")
         except Exception as e:
-            print(f" Automatic vector generation failed for {instance.title}: {str(e)}")
+            print(f"Automatic vector generation failed for {instance.title}: {str(e)}")
 
-
-
+            
 class SearchConfiguration(models.Model):
     confidence_threshold = models.FloatField(
         default=0.68, 
