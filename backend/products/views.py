@@ -25,6 +25,16 @@ print(" Loading CLIP Vision Engine into global system memory...")
 GLOBAL_CLIP_MODEL = SentenceTransformer('clip-ViT-B-32')
 print(" CLIP Engine successfully cached in RAM!")
 
+def get_absolute_image_url(image_field):
+    if not image_field:
+        return ""
+    try:
+        return image_field.url
+    except Exception:
+        return ""
+    
+  
+
 @api_view(['GET'])
 def flash_sale_list(request):
     products = Product.objects.filter(sale_type__in=['flash_sale', 'both'])    
@@ -36,10 +46,7 @@ def flash_sale_list(request):
         
     data = []
     for p in products:
-        image_path = p.image.url if p.image else ""
-        if image_path and not image_path.startswith('http'):
-            image_path = f"http://127.0.0.1:8000{image_path}"
-
+        
         data.append({
             "id": p.id,
             "title": p.title,
@@ -48,7 +55,7 @@ def flash_sale_list(request):
             "rating": p.rating,
             "soldCount": p.sold_count,
             "category": p.category,
-            "image": image_path,
+            "image": get_absolute_image_url(p.image),
             "isWishlisted": p.id in user_wishlist_ids 
         })
         
@@ -85,16 +92,14 @@ def todays_for_you_list(request):
 
     products_data = []
     for product in all_products:
-        image_path = product.image.url if product.image else ""
-        if image_path and not image_path.startswith('http'):
-            image_path = f"http://127.0.0.1:8000{image_path}"
+
 
         products_data.append({
             "id": product.id,
             "title": product.title,
             "price": product.price,
             "oldPrice": product.old_price,
-            "image": image_path,
+            "image": get_absolute_image_url(product.image),
             "rating": product.rating,
             "soldCount": product.sold_count,
             "category": product.category,
@@ -119,9 +124,7 @@ def product_detail_api(request, product_id):
     if request.user.is_authenticated:
         user_wishlist_ids = Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
 
-    image_path = product.image.url if product.image else ""
-    if image_path and not image_path.startswith('http'):
-        image_path = f"http://127.0.0.1:8000{image_path}"
+   
 
     data = {
         "id": product.id,
@@ -131,7 +134,7 @@ def product_detail_api(request, product_id):
         "rating": product.rating,
         "soldCount": product.sold_count,
         "category": product.category,
-        "image": image_path,
+        "image": get_absolute_image_url(product.image),
         "isWishlisted": product.id in user_wishlist_ids
     }
     return JsonResponse(data)
@@ -177,16 +180,13 @@ def get_user_wishlist(request):
     wishlist_data = []
     for item in wishlist_items:
         product = item.product
-        image_path = product.image.url if product.image else ""
-        if image_path and not image_path.startswith('http'):
-            image_path = f"http://127.0.0.1:8000{image_path}"
-
+       
         wishlist_data.append({
             "id": product.id,
             "title": product.title,
             "price": product.price,
             "oldPrice": product.old_price,
-            "image": image_path,
+            "image": get_absolute_image_url(product.image),
             "rating": product.rating,
             "soldCount": product.sold_count,
             "isWishlisted": True 
@@ -303,7 +303,7 @@ def visual_product_search(request):
         
         config = SearchConfiguration.objects.filter(is_active=True).first()
         active_threshold = config.confidence_threshold if config else 0.68
-        print(f"⚙️ Dynamic Parameters Applied — Confidence Threshold: {active_threshold}")
+        print(f"Dynamic Parameters Applied — Confidence Threshold: {active_threshold}")
 
         products = Product.objects.all()
         match_results = []
@@ -357,16 +357,12 @@ def visual_product_search(request):
         
         search_data = []
         for product, score in top_matches:
-            image_path = product.image.url if product.image else ""
-            if image_path and not image_path.startswith('http'):
-                image_path = f"http://127.0.0.1:8000{image_path}"
-                
             search_data.append({
                 "id": product.id,
-                "title": product.title,
+                "title": product.title, 
                 "price": product.price,
                 "oldPrice": product.old_price,
-                "image": image_path,
+                "image": get_absolute_image_url(product.image),
                 "rating": product.rating,
                 "soldCount": product.sold_count,
                 "category": product.category,
