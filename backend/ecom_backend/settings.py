@@ -164,18 +164,17 @@ CLOUDINARY_STORAGE = {
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# STATICFILES_STORAGE = "ecom_backend.storage.CustomWhiteNoiseStorage"
-
-# STORAGES = {
-#     "default": {
-#         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-#     },
-#     "staticfiles": {
-#         "BACKEND": "ecom_backend.storage.CustomWhiteNoiseStorage",
-#     },  
-# }
-
 STATICFILES_STORAGE = "ecom_backend.storage.CustomWhiteNoiseStorage"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "ecom_backend.storage.CustomWhiteNoiseStorage",
+    },  
+}
+
 
 CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = env('CELERY_BROKER_URL', default='redis://localhost:6379/0')
