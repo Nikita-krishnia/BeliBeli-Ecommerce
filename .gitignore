@@ -1,17 +1,3 @@
-# Frontend exclusions
-frontend/node_modules/
-frontend/dist/
-.env
 
-# Backend exclusions
-backend/__pycache__/
-backend/*.sqlite3
-backend/venv/
-backend/.env
 .DS_Store
-__pycache__/
-*.pyc
-media/
-
-__pycache__/
-*.pyc
+.vscode/
