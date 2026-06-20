@@ -162,6 +162,7 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': env('CLOUDINARY_API_SECRET'),
 }
 
+STATICFILES_STORAGE = "ecom_backend.storage.CustomWhiteNoiseStorage"
 
 STORAGES = {
     "default": {
