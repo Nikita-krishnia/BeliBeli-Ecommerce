@@ -17,11 +17,11 @@ interface MatchedProduct {
 
 interface VisualSearchModalProps {
     isOpen: boolean;
-    onClose: () => void;    
+    onClose: () => void;
     imageFile: File | null;
     previewUrl: string; // ➔ 1. Accept the static preview URL directly as a prop
-    loading: boolean; 
-    setLoading: (value: boolean) => void; 
+    loading: boolean;
+    setLoading: (value: boolean) => void;
 }
 
 export default function VisualSearchModal({ isOpen, onClose, imageFile, previewUrl, loading, setLoading }: VisualSearchModalProps) {
@@ -33,28 +33,59 @@ export default function VisualSearchModal({ isOpen, onClose, imageFile, previewU
         const formData = new FormData();
         formData.append('image', imageFile);
 
+        let pollInterval: ReturnType<typeof setInterval>;
+
+        const pollForResults = async (taskId: string) => {
+            pollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`http://127.0.0.1:8000/api/visual-search-results/${taskId}/`);
+                    const data = await res.json();
+
+                    if (data.status === 'success') {
+                        clearInterval(pollInterval);
+                        setMatches(data.results);
+                        setLoading(false);
+                    } else if (data.status === 'error') {
+                        clearInterval(pollInterval);
+                        console.error("Visual search failed:", data.message);
+                        setLoading(false);
+                    }
+                    // if status is 'pending', keep polling
+                } catch (err) {
+                    clearInterval(pollInterval);
+                    console.error("Polling error:", err);
+                    setLoading(false);
+                }
+            }, 1500); // poll every 1.5 seconds
+        };
+
         const sendVisualSearch = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/products/visual-search/', {
+                const response = await fetch('http://127.0.0.1:8000/api/visual-search/', {
                     method: 'POST',
                     body: formData,
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    setMatches(data);
-                }
+                    pollForResults(data.taskId);
+                    
+                } else {
+                console.error("Visual search submission failed");
+                setLoading(false);
+            }
             } catch (err) {
                 console.error("Visual search API failure:", err);
-            } finally {
-                setLoading(false); 
-            }
+                setLoading(false);
+            } 
         };
 
         sendVisualSearch();
-        
-        // ➔ 2. Notice there are NO state setters or cleanups here. Purely hits the API exactly ONCE.
-    }, [imageFile, setLoading]); 
+
+        return () => {
+        if (pollInterval) clearInterval(pollInterval);
+    };
+    }, [imageFile, setLoading]);
 
     const handleModalClose = () => {
         setMatches([]);
