@@ -12,18 +12,18 @@ import numpy as np
 from PIL import Image
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
-from sentence_transformers import SentenceTransformer
 from .models import Product, SearchConfiguration
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 client = Groq(api_key="")
 client = Groq(api_key=env("GROQ_API_KEY"))
 
-
-print(" Loading CLIP Vision Engine into global system memory...")
-GLOBAL_CLIP_MODEL = SentenceTransformer('clip-ViT-B-32')
-print(" CLIP Engine successfully cached in RAM!")
 
 def get_absolute_image_url(image_field):
     if not image_field:
@@ -280,98 +280,63 @@ def track_category_view(request):
 def visual_product_search(request):
     if 'image' not in request.FILES:
         return JsonResponse({"error": "No image file provided"}, status=400)
-        
+    
     try:
+        from base64 import b64encode
+        from .tasks import perform_visual_search
+        
         uploaded_file = request.FILES['image']
-        user_img = Image.open(uploaded_file)
+        image_base64 = b64encode(uploaded_file.read()).decode()
         
-        # 1. Generate the image vector embeddings vector
-        user_vector = GLOBAL_CLIP_MODEL.encode(user_img)
+        # Queue the task (returns immediately - non-blocking!)
+        task = perform_visual_search.delay(image_base64)
         
-        # ➔ 2. AI TEXT-ANCHOR MATCHING LAYER:
-        # We find out what category domain this image belongs to using text anchors
-        category_anchors = ["clothing", "shoes", "sunglasses", "hats"]
-        
-        # Encode these text categories into the same math space as the image
-        text_embeddings = GLOBAL_CLIP_MODEL.encode(category_anchors)
-        
-        # Find which text anchor has the highest dot product with the user's image
-        scores = [np.dot(user_vector, text_emb) / (np.linalg.norm(user_vector) * np.linalg.norm(text_emb)) for text_emb in text_embeddings]
-        predicted_domain = category_anchors[np.argmax(scores)]
-        
-        print(f"AI Predicted Search Domain Category: {predicted_domain}")
-        
-        config = SearchConfiguration.objects.filter(is_active=True).first()
-        active_threshold = config.confidence_threshold if config else 0.68
-        print(f"Dynamic Parameters Applied — Confidence Threshold: {active_threshold}")
-
-        products = Product.objects.all()
-        match_results = []
-        
-        for p in products:
-            if not p.image_vector:
-                continue
-                
-            try:
-                # Basic parsing validations
-                parsed_vector = json.loads(p.image_vector)
-                if not parsed_vector:
-                    continue
-                    
-                catalog_vector = np.array(parsed_vector)
-                if user_vector.shape != catalog_vector.shape:
-                    continue
-                
-                # Math Core: Cosine Similarity
-                dot_product = np.dot(user_vector, catalog_vector)
-                norm_user = np.linalg.norm(user_vector)
-                norm_catalog = np.linalg.norm(catalog_vector)
-                
-                if norm_user == 0 or norm_catalog == 0:
-                    continue
-                    
-                similarity = dot_product / (norm_user * norm_catalog)
-                
-                # ➔ 3. APPLY SMART DUAL FILTER LAYER:
-                # Rule A: Must pass a strict baseline similarity index threshold (e.g., 68%)
-                # Rule B: Protect domain bounds (If user uploaded clothing, do not show shoes!)
-                product_cat_lower = p.category.lower()
-                
-                is_domain_match = (
-                    (predicted_domain == "shoes" and "shoe" in product_cat_lower) or
-                    (predicted_domain == "clothing" and ("shirt" in product_cat_lower or "clothing" in product_cat_lower)) or
-                    (predicted_domain == "sunglasses" and "glass" in product_cat_lower) or
-                    (predicted_domain == "hats" and "hat" in product_cat_lower)
-                )
-                
-                if similarity >= active_threshold and (is_domain_match or similarity >= 0.80):
-                    match_results.append((p, similarity))
-                    
-            except Exception as row_err:
-                print(f"Skipping row error for {p.title}: {str(row_err)}")
-                continue 
-                
-        # Sort results by match score descending
-        match_results.sort(key=lambda x: x[1], reverse=True)
-        top_matches = match_results[:5]
-        
-        search_data = []
-        for product, score in top_matches:
-            search_data.append({
-                "id": product.id,
-                "title": product.title, 
-                "price": product.price,
-                "oldPrice": product.old_price,
-                "image": get_absolute_image_url(product.image),
-                "rating": product.rating,
-                "soldCount": product.sold_count,
-                "category": product.category,
-                "matchScore": round(float(score) * 100, 2)
-            })
-            
-        return JsonResponse(search_data, safe=False, status=200)
+        return JsonResponse({
+            "taskId": task.id,
+            "status": "processing",
+            "message": "Visual search queued. Checking results..."
+        }, status=202)  # 202 = Accepted
         
     except Exception as e:
-        print("!!! VISUAL SEARCH CRASH LOG:", str(e))
-        return JsonResponse({"error": f"Visual search failed processing: {str(e)}"}, status=500)
+        logger.error(f"Visual search submission failed: {e}")
+        return JsonResponse({"error": str(e)}, status=400)
     
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def visual_search_results(request, task_id):
+    """Get results - user polls this endpoint"""
+    from celery.result import AsyncResult
+    
+    task_result = AsyncResult(task_id)
+    
+    if task_result.state == 'PENDING':
+        # Still processing
+        return JsonResponse({
+            "status": "pending",
+            "message": "Searching... Please wait",
+            "progress": "loading"
+        }, status=202)
+        
+    elif task_result.state == 'SUCCESS':
+        # Results ready
+        result = task_result.result
+        if result.get("status") == "success":
+            return JsonResponse({
+                "status": "success",
+                "results": result.get("results", [])
+            }, status=200)
+        else:
+            return JsonResponse({
+                "status": "error",
+                "message": result.get("message", "Unknown error")
+            }, status=400)
+            
+    elif task_result.state == 'FAILURE':
+        return JsonResponse({
+            "status": "error",
+            "message": "Search failed: " + str(task_result.info)
+        }, status=400)
+    
+    return JsonResponse({"status": "unknown"}, status=400)
