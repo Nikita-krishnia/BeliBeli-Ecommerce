@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import flash_sale_list,dynamic_category_list,todays_for_you_list,product_detail_api,visual_product_search,visual_search_results
+from .views import flash_sale_list,dynamic_category_list,todays_for_you_list,product_detail_api
 from . import views
 
 urlpatterns = [
