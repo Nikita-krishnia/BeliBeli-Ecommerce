@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 class Product(models.Model):
@@ -49,15 +47,6 @@ class UserCategoryPreference(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.category} ({self.view_count} views)"
     
-
-
-
-@receiver(post_save, sender=Product)
-def auto_generate_product_vector(sender, instance, created, **kwargs):
-    if instance.image and not instance.image_vector:
-        from .tasks import generate_image_vector
-        generate_image_vector.delay(instance.id)
-
 
 class SearchConfiguration(models.Model):
     confidence_threshold = models.FloatField(
