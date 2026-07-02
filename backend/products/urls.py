@@ -11,6 +11,4 @@ urlpatterns = [
     path('api/products/wishlist/', views.get_user_wishlist, name='get_user_wishlist'),
     path('api/products/ai-assistant/', views.ai_shopping_assistant, name='ai_shopping_assistant'),
     path('api/products/track-view/', views.track_category_view, name='track_category_view'),
-    path('api/visual-search/', visual_product_search, name='visual_search'),
-    path('api/visual-search-results/<str:task_id>/', visual_search_results, name='visual_search_results'),
 ]

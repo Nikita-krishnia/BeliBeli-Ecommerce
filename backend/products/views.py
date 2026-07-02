@@ -7,12 +7,8 @@ from rest_framework.decorators import api_view, permission_classes
 from groq import Groq
 import environ
 import os
-from django.utils import timezone
-import numpy as np
-from PIL import Image
 from rest_framework.decorators import parser_classes
-from rest_framework.parsers import MultiPartParser, FormParser
-from .models import Product, SearchConfiguration
+from .models import Product
 import logging
 
 
@@ -274,38 +270,7 @@ def track_category_view(request):
         return JsonResponse({"error": str(e)}, status=400)
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-@parser_classes([MultiPartParser, FormParser])
-def visual_product_search(request):
-    if 'image' not in request.FILES:
-        return JsonResponse({"error": "No image file provided"}, status=400)
-    
-    try:
-        from base64 import b64encode
-        from .tasks import perform_visual_search
-        
-        uploaded_file = request.FILES['image']
-        image_base64 = b64encode(uploaded_file.read()).decode()
-        
-        # Queue the task (returns immediately - non-blocking!)
-        task = perform_visual_search.delay(image_base64)
-        
-        return JsonResponse({
-            "taskId": task.id,
-            "status": "processing",
-            "message": "Visual search queued. Checking results..."
-        }, status=202)  # 202 = Accepted
-        
-    except Exception as e:
-        logger.error(f"Visual search submission failed: {e}")
-        return JsonResponse({"error": str(e)}, status=400)
-    
 
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def visual_search_results(request, task_id):
     """Get results - user polls this endpoint"""
     from celery.result import AsyncResult
     

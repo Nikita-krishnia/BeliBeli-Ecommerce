@@ -2,10 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-import json
-from PIL import Image
-import requests
-from io import BytesIO
 
 
 class Product(models.Model):
@@ -54,24 +50,6 @@ class UserCategoryPreference(models.Model):
         return f"{self.user.username} - {self.category} ({self.view_count} views)"
     
 
-# @receiver(post_save, sender=Product)
-# def auto_generate_product_vector(sender, instance, created, **kwargs):
-#     """Automatically generates an image vector fingerprint when a product is saved"""
-#     if instance.image and not instance.image_vector:
-#         try:
-#             from sentence_transformers import SentenceTransformer
-
-#             model = SentenceTransformer('clip-ViT-B-32')
-
-#             response = requests.get(instance.image.url)
-#             img = Image.open(BytesIO(response.content))
-#             vector = model.encode(img)
-
-#             instance.image_vector = json.dumps(vector.tolist())
-#             Product.objects.filter(id=instance.id).update(image_vector=instance.image_vector)
-#             print(f"Signal: Generated vector automatically for '{instance.title}'")
-#         except Exception as e:
-#             print(f"Automatic vector generation failed for {instance.title}: {str(e)}")
 
 
 @receiver(post_save, sender=Product)

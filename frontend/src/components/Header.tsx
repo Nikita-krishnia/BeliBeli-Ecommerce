@@ -1,9 +1,8 @@
 import './Header.css'
 import { useCart } from '../hooks/useCart';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, Camera } from 'lucide-react';
-import VisualSearchModal from './VisualSearchModal';
-import { useState, useRef } from 'react';
+import { Heart} from 'lucide-react';
+
 
 
 export default function Header() {
@@ -14,32 +13,6 @@ export default function Header() {
     const token = localStorage.getItem('token');
     const savedUsername = localStorage.getItem('username') || 'User';
 
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [selectedImage, setSelectedImage] = useState<File | null>(null);
-    const [isVisualSearchOpen, setIsVisualSearchOpen] = useState<boolean>(false);
-
-    const [visualSearchLoading, setVisualSearchLoading] = useState<boolean>(false);
-    const [visualPreviewUrl, setVisualPreviewUrl] = useState<string>('');
-
-    const handleCameraClick = () => {
-        // Programmatically trigger a click on our hidden native file input node
-        fileInputRef.current?.click();
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setVisualSearchLoading(true);
-            setSelectedImage(file);
-
-            // ➔ Generate the URL string directly here in the user interaction event loop
-            const url = URL.createObjectURL(file);
-            setVisualPreviewUrl(url);
-
-            setIsVisualSearchOpen(true);
-            e.target.value = ""; // Clear file cache node
-        }
-    };
     const handleInputChange = (text: string) => {
         if (text.trim()) {
             navigate(`/?search=${encodeURIComponent(text.trim())}`);
@@ -107,34 +80,7 @@ export default function Header() {
                             style={{ paddingRight: '45px', width: '100%' }}
                         />
 
-                        <button
-                            type="button"
-                            className="camera-search-btn"
-                            onClick={handleCameraClick}
-                            aria-label="Search by image"
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                position: 'absolute',
-                                right: '15px',
-                                cursor: 'pointer',
-                                color: '#555555',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                padding: '4px'
-                            }}
-                        >
-                            <Camera size={20} />
-                        </button>
 
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            accept="image/*"
-                            style={{ display: 'none' }}
-                        />
                     </div>
                 </div>
 
@@ -160,22 +106,6 @@ export default function Header() {
                 </div>
             </div>
 
-            <VisualSearchModal
-                isOpen={isVisualSearchOpen}
-                onClose={() => {
-                    setIsVisualSearchOpen(false);
-                    setSelectedImage(null);
-                    // ➔ Safe cleanup right when the modal window disappears
-                    if (visualPreviewUrl) {
-                        URL.revokeObjectURL(visualPreviewUrl);
-                        setVisualPreviewUrl('');
-                    }
-                }}
-                imageFile={selectedImage}
-                previewUrl={visualPreviewUrl} 
-                loading={visualSearchLoading}
-                setLoading={setVisualSearchLoading}
-            />
         </header>
     );
 }
