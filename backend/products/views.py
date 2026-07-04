@@ -269,39 +269,3 @@ def track_category_view(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
 
-
-
-    """Get results - user polls this endpoint"""
-    from celery.result import AsyncResult
-    
-    task_result = AsyncResult(task_id)
-    
-    if task_result.state == 'PENDING':
-        # Still processing
-        return JsonResponse({
-            "status": "pending",
-            "message": "Searching... Please wait",
-            "progress": "loading"
-        }, status=202)
-        
-    elif task_result.state == 'SUCCESS':
-        # Results ready
-        result = task_result.result
-        if result.get("status") == "success":
-            return JsonResponse({
-                "status": "success",
-                "results": result.get("results", [])
-            }, status=200)
-        else:
-            return JsonResponse({
-                "status": "error",
-                "message": result.get("message", "Unknown error")
-            }, status=400)
-            
-    elif task_result.state == 'FAILURE':
-        return JsonResponse({
-            "status": "error",
-            "message": "Search failed: " + str(task_result.info)
-        }, status=400)
-    
-    return JsonResponse({"status": "unknown"}, status=400)
