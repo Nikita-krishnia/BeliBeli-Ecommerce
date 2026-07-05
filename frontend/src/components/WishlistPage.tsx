@@ -3,6 +3,7 @@ import ProductCard from './ProductCard';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './WishlistPage.css'; 
+import API_BASE_URL from '../config';
 
 interface Product {
     id: number;
@@ -27,7 +28,7 @@ export default function WishlistPage() {
             }
 
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/products/wishlist/', {
+                const response = await fetch(`${API_BASE_URL}/api/products/wishlist/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

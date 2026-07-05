@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import './Categories.css';
+import API_BASE_URL from '../config';
+
 
 const CATEGORY_STICKERS: { [key: string]: string } = {
     "t-shirt": "👕",
@@ -23,7 +25,7 @@ export default function Categories({onSelectCategory}:CategoriesProps) {
     const [categories, setCategories] = useState<string[]>([]);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/categories/')
+        fetch(`${API_BASE_URL}/api/categories/`)
             .then(res => res.json())
             .then(data => {
                 setCategories([...data, "All Category"]);

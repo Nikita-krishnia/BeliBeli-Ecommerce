@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-
+import API_BASE_URL from '../config';
 export interface CartItem {
     cartItemId: number;
     productId: number;
@@ -36,7 +36,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             return;
         }
 
-        fetch('http://127.0.0.1:8000/api/cart/', {
+        fetch(`${API_BASE_URL}/api/cart/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const loadCart = async () => {
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/cart/', {
+            const res = await fetch(`${API_BASE_URL}/api/cart/`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             return;
         }
 
-        fetch('http://127.0.0.1:8000/api/cart/add/', {
+        fetch(`${API_BASE_URL}/api/cart/add/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         if (!token) return;
 
-        fetch(`http://127.0.0.1:8000/api/cart/delete/${cartItemId}/`, {
+        fetch(`${API_BASE_URL}/api/cart/delete/${cartItemId}/`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

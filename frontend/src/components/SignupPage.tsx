@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './Signup.css'; 
+import API_BASE_URL from '../config';
 
 export default function SignupPage() {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function SignupPage() {
         setLoading(true);
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/users/register/', {
+            const response = await fetch(`${API_BASE_URL}/api/users/register/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

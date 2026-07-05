@@ -6,6 +6,8 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import './FlashSale.css';
 import ProductCard from './ProductCard';
+import API_BASE_URL from '../config';
+
 
 interface SaleItemDetails {
     id: number;
@@ -71,7 +73,7 @@ const FlashSale = () => {
     };
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/products/')
+        fetch(`${API_BASE_URL}/api/products/`)
             .then((response) => response.json())
             .then((data) => {
                 setProducts(data);
@@ -153,3 +155,4 @@ const FlashSale = () => {
 }
 
 export default FlashSale;
+

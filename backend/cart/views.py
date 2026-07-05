@@ -15,7 +15,7 @@ def get_user_cart(request):
     for item in items:
         image_path = item.product.image.url if item.product.image else ""
         if image_path and not image_path.startswith('http'):
-            image_path = f"http://127.0.0.1:8000{image_path}"
+            image_path = f"${API_BASE_URL}{image_path}"
 
         cart_data.append({
             "cartItemId": item.id,
@@ -121,7 +121,7 @@ def get_user_orders(request):
         for item in order.items.all():
             image_path = item.product.image.url if item.product.image else ""
             if image_path and not image_path.startswith('http'):
-                image_path = f"http://127.0.0.1:8000{image_path}"
+                image_path = f"${API_BASE_URL}{image_path}"
 
             line_items.append({
                 "product_id": item.product.id,

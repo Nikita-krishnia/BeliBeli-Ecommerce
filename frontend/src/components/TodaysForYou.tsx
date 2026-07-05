@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import './TodaysForYou.css';
 import ProductCard from "./ProductCard";
+import API_BASE_URL from '../config';
 
 interface Product {
     id: number;
@@ -30,7 +31,7 @@ export default function TodaysForYou({ selectedCategory, searchQuery }: TodaysFo
                 headers['Authorization'] = `Token ${token}`;
             }
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/products/todays-for-you/', {
+                const response = await fetch(`${API_BASE_URL}/api/products/todays-for-you/`, {
                     method: 'GET',
                     headers: headers
                 });

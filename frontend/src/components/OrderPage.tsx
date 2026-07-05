@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useCart } from '../hooks/useCart';
 import './OrderPage.css';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config';
 
 interface OrderItem {
     product_id: number;
@@ -37,7 +38,7 @@ useEffect(() => {
             }
             
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/users/orders/', { 
+                const response = await fetch(`${API_BASE_URL}/api/users/orders/`, { 
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

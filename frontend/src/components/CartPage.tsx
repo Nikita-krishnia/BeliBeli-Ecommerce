@@ -2,6 +2,7 @@ import { Trash2, ArrowLeft } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import './CartPage.css';
 import { useNavigate, Link } from 'react-router-dom';
+import API_BASE_URL from '../config';
 
 export default function CartPage() {
     const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function CartPage() {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/cart/checkout/', { 
+            const response = await fetch(`${API_BASE_URL}/api/cart/checkout/`, { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

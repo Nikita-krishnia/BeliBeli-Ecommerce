@@ -3,6 +3,7 @@ import { useCart } from '../hooks/useCart';
 import { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Share2, Star, ChevronRight } from 'lucide-react';
 import './ProductDetail.css';
+import API_BASE_URL from '../config';
 
 interface Product {
     id: number;
@@ -35,7 +36,7 @@ export default function ProductDetail() {
             if (token) headers['Authorization'] = `Token ${token}`;
 
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/products/${id}/`, {
+                const response = await fetch(`${API_BASE_URL}/api/products/${id}/`, {
                     method: 'GET',
                     headers: headers
                 });
@@ -45,7 +46,7 @@ export default function ProductDetail() {
                     setIsLiked(data.isWishlisted || false); 
 
                     if (token && data.category) {
-                        fetch('http://127.0.0.1:8000/api/products/track-view/', {
+                        fetch(`${API_BASE_URL}/api/products/track-view/`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -75,7 +76,7 @@ export default function ProductDetail() {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/products/wishlist/toggle/', {
+            const response = await fetch(`${API_BASE_URL}/api/products/wishlist/toggle/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

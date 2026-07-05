@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import './AIAssistant.css'; 
+import API_BASE_URL from '../config';
 
 interface ChatMessage {
     role: 'user' | 'assistant';
@@ -55,7 +56,7 @@ export default function AIAssistant() {
                 content: msg.content
             }));
 
-            const response = await fetch('http://127.0.0.1:8000/api/products/ai-assistant/', {
+            const response = await fetch(`${API_BASE_URL}/api/products/ai-assistant/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
