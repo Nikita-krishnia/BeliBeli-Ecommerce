@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.tsx'
 import { CartProvider } from './context/CartContext.tsx'
 import { BrowserRouter } from 'react-router-dom';
+import './responsive.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -14,7 +14,7 @@ interface SaleItemDetails {
     title: string;
     price: string;
     oldPrice: string;
-    image: string;  
+    image: string;
     rating?: number;
     soldCount?: string;
     category?: string;
@@ -122,8 +122,26 @@ const FlashSale = () => {
             <div className="flash-products-container">
                 <Swiper
                     modules={[Navigation]}
-                    spaceBetween={30}
+                    spaceBetween={16}
                     slidesPerView={4.2}
+                    breakpoints={{
+                        0: {
+                            slidesPerView: 1.3,
+                            spaceBetween: 12,
+                        },
+                        480: {
+                            slidesPerView: 2.2,
+                            spaceBetween: 16,
+                        },
+                        768: {
+                            slidesPerView: 3.2,
+                            spaceBetween: 20,
+                        },
+                        1024: {
+                            slidesPerView: 4.2,
+                            spaceBetween: 30,
+                        },
+                    }}
                     className="mySwiper"
 
 

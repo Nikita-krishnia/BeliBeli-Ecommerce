@@ -1,0 +1,150 @@
+/* Default: hide mobile auth bar on desktop */
+.mobile-auth-bar {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    /* ===== HEADER ===== */
+    .upper-header {
+        display: none !important;
+    }
+
+    .mobile-auth-bar {
+        display: flex !important;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 8px 16px;
+        background-color: #fff;
+        border-bottom: 1px solid #f6dede;
+        font-size: 13px;
+        gap: 10px;
+    }
+
+    .navbar-last {
+        gap: 6px;
+    }
+
+    .orders-history-link {
+        font-size: 13px;
+        margin-right: 4px;
+    }
+
+    /* ===== SALE BANNER ===== */
+    .swiper-slide-content {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 0 !important;
+    }
+
+    .banner-content {
+        padding: 24px 20px 12px 20px !important;
+        text-align: center;
+        width: 100%;
+        order: 1;
+    }
+
+    .banner-image-container {
+        width: 100%;
+        justify-content: center !important;
+        order: 2;
+    }
+
+    .banner-img {
+        height: 200px !important;
+        width: 100% !important;
+        object-fit: contain !important;
+    }
+
+    .banner-title {
+        font-size: 28px !important;
+        max-width: 100% !important;
+        margin-bottom: 8px !important;
+    }
+
+    .banner-tagline {
+        font-size: 13px !important;
+    }
+
+    .below-title {
+        font-size: 13px !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* ===== FLASH SALE ===== */
+    .flash-sale-section {
+        padding: 20px 0 40px 0 !important;
+    }
+
+    .flash-header {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 0 12px;
+    }
+
+    .flash-title-container {
+        padding: 0 !important;
+    }
+
+    .flash-title-container h2 {
+        font-size: 24px !important;
+    }
+
+    .flash-nav-buttons {
+        margin-right: 12px !important;
+    }
+
+    .flash-products-container {
+        padding-left: 12px !important;
+    }
+
+    /* ===== TODAYS FOR YOU ===== */
+    .Todays-section {
+        padding: 20px 16px !important;
+    }
+
+    .products-grid1 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer-banner {
+        height: 200px !important;
+    }
+
+    .banner-overlay h2 {
+        font-size: 22px !important;
+        padding: 0 20px;
+    }
+
+    .footer-container {
+        flex-direction: column !important;
+        padding: 30px 20px !important;
+        gap: 30px !important;
+    }
+
+    .footer-links-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+    }
+
+    .img1 {
+        height: 180px !important;
+    }
+
+    .common-title1 {
+        font-size: 14px !important;
+        height: auto !important;
+    }
+
+    .price-container .current-price {
+        font-size: 18px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-title {
+        font-size: 26px !important;
+    }
+}

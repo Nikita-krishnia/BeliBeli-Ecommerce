@@ -1,7 +1,7 @@
 import './Header.css'
 import { useCart } from '../hooks/useCart';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart} from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 
 
@@ -62,6 +62,22 @@ export default function Header() {
                     )}
 
                 </div>
+            </div>
+            
+            {/* Mobile-only auth bar */}
+            <div className="mobile-auth-bar">
+                {token ? (
+                    <>
+                        <span style={{ fontWeight: 600, fontSize: '12px' }}>👋 {savedUsername}</span>
+                        <button onClick={handleLogout} className="logout-inline-btn">Logout</button>
+                    </>
+                ) : (
+                    <>
+                        <Link to="/signup" className="auth" style={{ color: 'black', fontWeight: 600, textDecoration: 'none' }}>Sign Up</Link>
+                        <span style={{ color: 'grey' }}>|</span>
+                        <Link to="/login" className="auth" style={{ color: 'black', fontWeight: 600, textDecoration: 'none' }}>Login</Link>
+                    </>
+                )}
             </div>
 
             <div className="main-navbar">
