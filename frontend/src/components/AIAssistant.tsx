@@ -82,7 +82,7 @@ export default function AIAssistant() {
     };
 
     return (
-        <div className="ai-assistant-container">
+        <div className="ai-assistant-wrapper">
             {!isOpen && (
                 <button className="ai-floating-bubble" onClick={() => setIsOpen(true)}>
                     <Sparkles className="sparkle-icon" size={16} />

@@ -148,3 +148,17 @@
         font-size: 26px !important;
     }
 }
+
+
+@media (max-width: 480px) {
+    .ai-assistant-wrapper {
+        bottom: 16px;
+        right: 16px;
+    }
+
+    .ai-chat-window {
+        width: calc(100vw - 32px);
+        height: 70vh;
+        max-height: 500px;
+    }
+}

@@ -45,8 +45,9 @@ function App() {
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/track/:orderId" element={<TrackOrder />} />
       </Routes>
-      <AIAssistant key={currentToken} />
+      {!hideHeaderFooter && <AIAssistant key={currentToken} />}
      {!hideHeaderFooter && <Footer />}
+     
     </>
   );
 }
