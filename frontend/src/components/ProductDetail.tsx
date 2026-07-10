@@ -1,9 +1,10 @@
-import { useParams, Link ,useNavigate} from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Share2, Star, ChevronRight } from 'lucide-react';
 import './ProductDetail.css';
 import API_BASE_URL from '../config';
+import Loader from './Loader';
 
 interface Product {
     id: number;
@@ -14,7 +15,7 @@ interface Product {
     soldCount: string;
     category: string;
     image: string;
-    isWishlisted?:boolean;
+    isWishlisted?: boolean;
 }
 
 export default function ProductDetail() {
@@ -43,7 +44,7 @@ export default function ProductDetail() {
                 if (response.ok) {
                     const data = await response.json();
                     setProduct(data);
-                    setIsLiked(data.isWishlisted || false); 
+                    setIsLiked(data.isWishlisted || false);
 
                     if (token && data.category) {
                         fetch(`${API_BASE_URL}/api/products/track-view/`, {
@@ -87,7 +88,7 @@ export default function ProductDetail() {
 
             if (response.ok) {
                 const data = await response.json();
-                setIsLiked(data.isWishlisted); 
+                setIsLiked(data.isWishlisted);
             }
         } catch (err) {
             console.error("Wishlist toggle failure:", err);
@@ -101,7 +102,7 @@ export default function ProductDetail() {
     };
 
     if (loading) {
-        return <div className="product-loading">Loading item specifications...</div>;
+        return <div className="product-loading"><Loader /></div>;
     }
 
     if (!product) {
@@ -182,8 +183,8 @@ export default function ProductDetail() {
 
                     <div className="chat-wishlist-share">
                         <button className="social"><MessageCircle size={16} /> Chat</button>
-                        <button className="social" onClick={handleWishlistToggle}><Heart size={16} color={isLiked ? "#ff4d4d" : "#333"} 
-                                fill={isLiked ? "#ff4d4d" : "none"} /> Wishlist</button>
+                        <button className="social" onClick={handleWishlistToggle}><Heart size={16} color={isLiked ? "#ff4d4d" : "#333"}
+                            fill={isLiked ? "#ff4d4d" : "none"} /> Wishlist</button>
                         <button className="social"><Share2 size={16} /> Share</button>
                     </div>
 

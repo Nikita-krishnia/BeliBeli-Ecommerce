@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import './TodaysForYou.css';
 import ProductCard from "./ProductCard";
 import API_BASE_URL from '../config';
+import Loader from './Loader';
 
 interface Product {
     id: number;
@@ -62,7 +63,18 @@ export default function TodaysForYou({ selectedCategory, searchQuery }: TodaysFo
     });
 
 
-    if (loading) return <div className="todays-loading">Loading marketplace items...</div>;
+     if (loading) {
+            return (
+                <section className="flash-sale-section">
+                    <div className="flash-products-container" style={{ display: 'flex', gap: '20px' }}>
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <Loader key={i} />
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+
 
     return (
         <section className="Todays-section">

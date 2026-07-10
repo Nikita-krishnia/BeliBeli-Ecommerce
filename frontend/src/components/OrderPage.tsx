@@ -3,6 +3,7 @@ import { useCart } from '../hooks/useCart';
 import './OrderPage.css';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config';
+import Loader from './Loader';
 
 interface OrderItem {
     product_id: number;
@@ -67,7 +68,18 @@ useEffect(() => {
         
         fetchOrders();
     }, []);
-    if (loading) return <div className="history-loading">Fetching order logs...</div>;
+    
+        if (loading) {
+        return (
+            <div className="order-page-container" style={{paddingLeft:'80px',paddingTop:'40px'}}>
+                <div className="order-items-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <Loader key={i} />
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="orders-history-container">

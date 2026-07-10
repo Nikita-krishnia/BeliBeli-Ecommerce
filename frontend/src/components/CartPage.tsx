@@ -3,10 +3,11 @@ import { useCart } from '../hooks/useCart';
 import './CartPage.css';
 import { useNavigate, Link } from 'react-router-dom';
 import API_BASE_URL from '../config';
+import Loader from './Loader';
 
 export default function CartPage() {
     const navigate = useNavigate();
-    
+
     const { cartItems, loading, removeFromCart } = useCart();
 
     const subtotal = cartItems.reduce((acc, item) => {
@@ -14,7 +15,7 @@ export default function CartPage() {
         return acc + (numericPrice * item.quantity);
     }, 0);
 
-    const deliveryFee = subtotal > 0 ? 150 : 0; 
+    const deliveryFee = subtotal > 0 ? 150 : 0;
     const totalOrderCost = subtotal + deliveryFee;
 
     const handleCheckout = async () => {
@@ -26,14 +27,14 @@ export default function CartPage() {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/cart/checkout/`, { 
+            const response = await fetch(`${API_BASE_URL}/api/cart/checkout/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}` 
+                    'Authorization': `Token ${token}`
                 },
-                body: JSON.stringify({ 
-                    total_amount: `Rs ${totalOrderCost.toLocaleString()}` 
+                body: JSON.stringify({
+                    total_amount: `Rs ${totalOrderCost.toLocaleString()}`
                 })
             });
 
@@ -51,7 +52,17 @@ export default function CartPage() {
         }
     };
 
-    if (loading) return <div className="cart-loading">Loading your shopping bag...</div>;
+    if (loading) {
+    return (
+        <div className="cart-page-container">
+            <div className="cart-items-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {Array.from({ length: 3 }).map((_, i) => (
+                    <Loader key={i} />
+                ))}
+            </div>
+        </div>
+    );
+}
 
     if (cartItems.length === 0) {
         return (
@@ -119,7 +130,7 @@ export default function CartPage() {
                             <span>Total Amount</span>
                             <span>Rs {totalOrderCost.toLocaleString()}</span>
                         </div>
-                        
+
                         <button className="checkout-proceed-btn" onClick={handleCheckout}>
                             Proceed to Secure Checkout
                         </button>
