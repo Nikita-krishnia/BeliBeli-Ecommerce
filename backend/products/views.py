@@ -25,7 +25,10 @@ def get_absolute_image_url(image_field):
     if not image_field:
         return ""
     try:
-        return image_field.url
+        url = image_field.url
+        if '/upload/' in url:
+            url = url.replace('/upload/', '/upload/f_auto,q_auto,w_800/', 1)
+        return url
     except Exception:
         return ""
     
