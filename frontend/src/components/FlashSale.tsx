@@ -89,10 +89,9 @@ const FlashSale = () => {
     if (loading) {
         return (
             <section className="flash-sale-section">
-                <div className="flash-products-container" style={{ display: 'flex', gap: '20px' }}>
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <Loader key={i} />
-                    ))}
+                <div className="flash-products-container skeleton-row">                    {Array.from({ length: 6 }).map((_, i) => (
+                    <Loader key={i} />
+                ))}
                 </div>
             </section>
         );

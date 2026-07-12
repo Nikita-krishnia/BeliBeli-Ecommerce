@@ -31,3 +31,33 @@
       calc(15 * var(--size)) calc(180 * var(--size));
   }
 }
+
+@media (max-width: 768px) {
+  .loader {
+    --size: 0.6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loader {
+    --size: 0.4px;
+  }
+}
+
+.skeleton-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .skeleton-row {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .skeleton-row {
+    gap: 8px;
+  }
+}

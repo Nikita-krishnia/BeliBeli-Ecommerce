@@ -51,17 +51,16 @@ export default function WishlistPage() {
         fetchWishlist();
     }, []);
 
-   if (loading) {
-    return (
-        <div className="wishlist-page-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
-            <div className="products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '25px' }}>
-                {Array.from({ length: 6 }).map((_, i) => (
+    if (loading) {
+        return (
+            <div className="wishlist-page-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
+                <div className="flash-products-container skeleton-row">                  {Array.from({ length: 6 }).map((_, i) => (
                     <Loader key={i} />
                 ))}
+                </div>
             </div>
-        </div>
-    );
-}
+        );
+    }
 
 
     if (wishlistItems.length === 0) {
