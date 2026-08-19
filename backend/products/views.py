@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
-client = Groq(api_key="")
 client = Groq(api_key=env("GROQ_API_KEY"))
 
 
@@ -234,7 +233,7 @@ def ai_shopping_assistant(request):
         messages.append({"role": "user", "content": user_message})
 
         completion = client.chat.completions.create(
-            model="llama-3.1-8b-instant", 
+            model="openai/gpt-oss-20b", 
             messages=messages,
             temperature=0.7,
             max_tokens=500
